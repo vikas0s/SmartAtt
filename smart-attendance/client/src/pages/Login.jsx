@@ -6,11 +6,26 @@ export default function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
+  const [emailError, setEmailError] = useState('');
   const { login } = useAuth();
   const navigate = useNavigate();
 
+  const validateEmail = (val) => {
+    if (!val) { setEmailError(''); return; }
+    if (val.endsWith('@attendance.in') || val.endsWith('@admin.in')) {
+      setEmailError('');
+    } else {
+      setEmailError('Email must end with @attendance.in (student) or @admin.in (admin)');
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (emailError) return;
+    if (!email.endsWith('@attendance.in') && !email.endsWith('@admin.in')) {
+      setEmailError('Email must end with @attendance.in (student) or @admin.in (admin)');
+      return;
+    }
     setLoading(true);
     const result = await login(email, password);
     setLoading(false);
@@ -33,16 +48,27 @@ export default function Login() {
 
         <form className="auth-form" onSubmit={handleSubmit}>
           <div className="form-group">
-            <label className="form-label">Email Address</label>
+            <label className="form-label">
+              Email Address
+              <span style={{ fontWeight: 400, fontSize: 11, color: 'var(--text-tertiary)', marginLeft: 6 }}>
+                (@attendance.in or @admin.in)
+              </span>
+            </label>
             <input
               type="email"
               className="form-input"
-              placeholder="you@example.com"
+              placeholder="yourname@attendance.in"
               value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              onChange={(e) => { setEmail(e.target.value); validateEmail(e.target.value); }}
               required
               id="login-email"
+              style={emailError ? { borderColor: 'var(--danger-500)' } : {}}
             />
+            {emailError && (
+              <div style={{ color: 'var(--danger-500)', fontSize: 12, marginTop: 4, fontWeight: 500 }}>
+                ⚠️ {emailError}
+              </div>
+            )}
           </div>
 
           <div className="form-group">
@@ -87,8 +113,8 @@ export default function Login() {
           color: 'var(--text-secondary)'
         }}>
           <strong>Demo Credentials:</strong><br />
-          Admin: admin@smart-attendance.com / admin123<br />
-          Student: vikas@student.com / student123
+          Admin: admin@admin.in / admin123<br />
+          Student: vikas@attendance.in / student123
         </div>
       </div>
     </div>

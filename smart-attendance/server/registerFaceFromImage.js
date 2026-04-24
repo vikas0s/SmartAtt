@@ -28,7 +28,11 @@ const User = require('./models/User');
 const FaceData = require('./models/FaceData');
 
 const MODEL_PATH = path.resolve(__dirname, '../client/public/models');
-const IMAGE_PATH = path.resolve(__dirname, '../client/public/students/vikas_sharma.png');
+// Try jpg first (new upload), fallback to png
+const fs = require('fs');
+const jpgPath = path.resolve(__dirname, '../client/public/students/vikas_sharma.jpg');
+const pngPath = path.resolve(__dirname, '../client/public/students/vikas_sharma.png');
+const IMAGE_PATH = fs.existsSync(jpgPath) ? jpgPath : pngPath;
 
 async function registerFace() {
   try {
@@ -83,7 +87,7 @@ async function registerFace() {
     console.log(`📸 Generated ${descriptors.length} face samples`);
 
     // Find the student
-    const student = await User.findOne({ email: 'vikas@student.com' });
+    const student = await User.findOne({ email: 'vikas@attendance.in' });
     if (!student) {
       console.error('❌ Student "Vikas Sharma" not found in database');
       process.exit(1);

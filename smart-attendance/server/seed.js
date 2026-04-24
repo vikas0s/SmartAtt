@@ -20,7 +20,7 @@ const seedData = async () => {
     // Create admin
     const admin = await User.create({
       name: 'Dr. Rajesh Kumar',
-      email: 'admin@smart-attendance.com',
+      email: 'admin@admin.in',
       password: 'admin123',
       role: 'admin',
       department: 'Computer Science',
@@ -31,7 +31,7 @@ const seedData = async () => {
     const students = await User.create([
       {
         name: 'Vikas Sharma',
-        email: 'vikas@student.com',
+        email: 'vikas@attendance.in',
         password: 'student123',
         role: 'student',
         enrollmentNumber: 'CS2024001',
@@ -40,7 +40,7 @@ const seedData = async () => {
       },
       {
         name: 'Priya Singh',
-        email: 'priya@student.com',
+        email: 'priya@attendance.in',
         password: 'student123',
         role: 'student',
         enrollmentNumber: 'CS2024002',
@@ -49,7 +49,7 @@ const seedData = async () => {
       },
       {
         name: 'Amit Patel',
-        email: 'amit@student.com',
+        email: 'amit@attendance.in',
         password: 'student123',
         role: 'student',
         enrollmentNumber: 'CS2024003',
@@ -58,7 +58,7 @@ const seedData = async () => {
       },
       {
         name: 'Sneha Gupta',
-        email: 'sneha@student.com',
+        email: 'sneha@attendance.in',
         password: 'student123',
         role: 'student',
         enrollmentNumber: 'EC2024001',
@@ -67,7 +67,7 @@ const seedData = async () => {
       },
       {
         name: 'Rahul Verma',
-        email: 'rahul@student.com',
+        email: 'rahul@attendance.in',
         password: 'student123',
         role: 'student',
         enrollmentNumber: 'ME2024001',
@@ -76,7 +76,7 @@ const seedData = async () => {
       },
       {
         name: 'Ananya Reddy',
-        email: 'ananya@student.com',
+        email: 'ananya@attendance.in',
         password: 'student123',
         role: 'student',
         enrollmentNumber: 'CS2024004',
@@ -85,7 +85,7 @@ const seedData = async () => {
       },
       {
         name: 'Karthik Nair',
-        email: 'karthik@student.com',
+        email: 'karthik@attendance.in',
         password: 'student123',
         role: 'student',
         enrollmentNumber: 'IT2024001',
@@ -94,7 +94,7 @@ const seedData = async () => {
       },
       {
         name: 'Meera Joshi',
-        email: 'meera@student.com',
+        email: 'meera@attendance.in',
         password: 'student123',
         role: 'student',
         enrollmentNumber: 'CS2024005',
@@ -107,8 +107,8 @@ const seedData = async () => {
 
     console.log('\n✅ Database seeded successfully!');
     console.log('\n📋 Login Credentials:');
-    console.log('   Admin: admin@smart-attendance.com / admin123');
-    console.log('   Student: vikas@student.com / student123');
+    console.log('   Admin: admin@admin.in / admin123');
+    console.log('   Student: vikas@attendance.in / student123');
 
     process.exit(0);
   } catch (error) {

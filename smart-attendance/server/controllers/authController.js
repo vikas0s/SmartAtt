@@ -8,6 +8,16 @@ const register = async (req, res, next) => {
   try {
     const { name, email, password, role, enrollmentNumber, department, semester } = req.body;
 
+    // Validate email domain based on role
+    const userRole = role || 'student';
+    const requiredDomain = userRole === 'admin' ? '@admin.in' : '@attendance.in';
+    if (!email || !email.endsWith(requiredDomain)) {
+      return res.status(400).json({
+        success: false,
+        message: `Invalid email domain. ${userRole === 'admin' ? 'Admin' : 'Student'} email must end with ${requiredDomain}`,
+      });
+    }
+
     // Check if user already exists
     const existingUser = await User.findOne({ email });
     if (existingUser) {

@@ -13,15 +13,41 @@ export default function Register() {
     semester: '',
   });
   const [loading, setLoading] = useState(false);
+  const [emailError, setEmailError] = useState('');
   const { register } = useAuth();
   const navigate = useNavigate();
 
+  const getRequiredDomain = (role) => role === 'admin' ? '@admin.in' : '@attendance.in';
+
+  const validateEmailDomain = (email, role) => {
+    if (!email) return '';
+    const domain = getRequiredDomain(role);
+    if (!email.endsWith(domain)) {
+      return `Invalid domain! ${role === 'admin' ? 'Admin' : 'Student'} email must end with ${domain}`;
+    }
+    return '';
+  };
+
   const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+    const updated = { ...formData, [e.target.name]: e.target.value };
+    setFormData(updated);
+    if (e.target.name === 'email' || e.target.name === 'role') {
+      setEmailError(validateEmailDomain(updated.email, updated.role));
+    }
+  };
+
+  const handleRoleChange = (role) => {
+    setFormData({ ...formData, role });
+    setEmailError(validateEmailDomain(formData.email, role));
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    const domainErr = validateEmailDomain(formData.email, formData.role);
+    if (domainErr) {
+      setEmailError(domainErr);
+      return;
+    }
     setLoading(true);
     const payload = { ...formData };
     if (payload.semester) payload.semester = parseInt(payload.semester);
@@ -52,14 +78,14 @@ export default function Register() {
           <div className="role-selector">
             <div
               className={`role-option ${formData.role === 'student' ? 'selected' : ''}`}
-              onClick={() => setFormData({ ...formData, role: 'student' })}
+              onClick={() => handleRoleChange('student')}
             >
               <div className="role-option-icon">👩‍🎓</div>
               <div className="role-option-label">Student</div>
             </div>
             <div
               className={`role-option ${formData.role === 'admin' ? 'selected' : ''}`}
-              onClick={() => setFormData({ ...formData, role: 'admin' })}
+              onClick={() => handleRoleChange('admin')}
             >
               <div className="role-option-icon">👨‍💼</div>
               <div className="role-option-label">Admin</div>
@@ -81,17 +107,28 @@ export default function Register() {
           </div>
 
           <div className="form-group">
-            <label className="form-label">Email Address</label>
+            <label className="form-label">
+              Email Address
+              <span style={{ fontWeight: 400, fontSize: 11, color: 'var(--text-tertiary)', marginLeft: 6 }}>
+                (use {getRequiredDomain(formData.role)})
+              </span>
+            </label>
             <input
               type="email"
               name="email"
               className="form-input"
-              placeholder="you@example.com"
+              placeholder={formData.role === 'admin' ? 'yourname@admin.in' : 'yourname@attendance.in'}
               value={formData.email}
               onChange={handleChange}
               required
               id="register-email"
+              style={emailError ? { borderColor: 'var(--danger-500)' } : {}}
             />
+            {emailError && (
+              <div style={{ color: 'var(--danger-500)', fontSize: 12, marginTop: 4, fontWeight: 500 }}>
+                ⚠️ {emailError}
+              </div>
+            )}
           </div>
 
           <div className="form-group">
