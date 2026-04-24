@@ -3,7 +3,8 @@ import axios from 'axios';
 
 const AuthContext = createContext(null);
 
-const API_URL = 'http://localhost:5000/api';
+// In production (Vercel), use the backend URL from env; in dev, use relative path (Vite proxy handles it)
+const API_URL = import.meta.env.VITE_API_URL || '/api';
 
 // Axios instance with interceptors
 const api = axios.create({

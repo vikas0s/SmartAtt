@@ -11,15 +11,21 @@ const DB_DATA_DIR = path.resolve(__dirname, '../.data/mongodb');
 const connectDB = async () => {
   try {
     let uri = process.env.MONGO_URI;
+    const isProduction = process.env.NODE_ENV === 'production' || process.env.VERCEL;
 
     // Try connecting to externally configured MongoDB first
     try {
       const conn = await mongoose.connect(uri, {
-        serverSelectionTimeoutMS: 3000,
+        serverSelectionTimeoutMS: 5000,
       });
       console.log(`✅ MongoDB Connected: ${conn.connection.host}`);
       return;
     } catch (err) {
+      // In production (Vercel), don't fallback to in-memory — require real MongoDB
+      if (isProduction) {
+        console.error('❌ MongoDB connection failed. Set MONGO_URI in Vercel environment variables.');
+        throw err;
+      }
       console.log('⚠️  External MongoDB not available, starting local persistent server...');
     }
 
@@ -46,10 +52,10 @@ const connectDB = async () => {
     // Always check if Vikas's face data needs registration (even after seed)
     const FaceData = require('../models/FaceData');
     const User = require('../models/User');
-    const vikasUser = await User.findOne({ email: 'vikas@student.com' });
+    const vikasUser = await User.findOne({ email: 'vikas@attendance.in' });
     if (vikasUser) {
       const faceExists = await FaceData.findOne({ studentId: vikasUser._id });
-      if (!faceExists) {
+      if (!faceExists && !isProduction) {
         console.log('🧠 Face data missing for Vikas, registering...');
         await registerVikasFace();
       }
@@ -94,7 +100,7 @@ const seedDemoData = async () => {
   // Create admin
   await User.create({
     name: 'Dr. Rajesh Kumar',
-    email: 'admin@smart-attendance.com',
+    email: 'admin@admin.in',
     password: 'admin123',
     role: 'admin',
     department: 'Computer Science',
@@ -104,7 +110,7 @@ const seedDemoData = async () => {
   await User.create([
     {
       name: 'Vikas Sharma',
-      email: 'vikas@student.com',
+      email: 'vikas@attendance.in',
       password: 'student123',
       role: 'student',
       enrollmentNumber: 'CS2024001',
@@ -114,7 +120,7 @@ const seedDemoData = async () => {
     },
     {
       name: 'Priya Singh',
-      email: 'priya@student.com',
+      email: 'priya@attendance.in',
       password: 'student123',
       role: 'student',
       enrollmentNumber: 'CS2024002',
@@ -123,7 +129,7 @@ const seedDemoData = async () => {
     },
     {
       name: 'Amit Patel',
-      email: 'amit@student.com',
+      email: 'amit@attendance.in',
       password: 'student123',
       role: 'student',
       enrollmentNumber: 'CS2024003',
@@ -132,7 +138,7 @@ const seedDemoData = async () => {
     },
     {
       name: 'Sneha Gupta',
-      email: 'sneha@student.com',
+      email: 'sneha@attendance.in',
       password: 'student123',
       role: 'student',
       enrollmentNumber: 'EC2024001',
@@ -141,7 +147,7 @@ const seedDemoData = async () => {
     },
     {
       name: 'Rahul Verma',
-      email: 'rahul@student.com',
+      email: 'rahul@attendance.in',
       password: 'student123',
       role: 'student',
       enrollmentNumber: 'ME2024001',
@@ -150,7 +156,7 @@ const seedDemoData = async () => {
     },
     {
       name: 'Ananya Reddy',
-      email: 'ananya@student.com',
+      email: 'ananya@attendance.in',
       password: 'student123',
       role: 'student',
       enrollmentNumber: 'CS2024004',
@@ -159,7 +165,7 @@ const seedDemoData = async () => {
     },
     {
       name: 'Karthik Nair',
-      email: 'karthik@student.com',
+      email: 'karthik@attendance.in',
       password: 'student123',
       role: 'student',
       enrollmentNumber: 'IT2024001',
@@ -168,7 +174,7 @@ const seedDemoData = async () => {
     },
     {
       name: 'Meera Joshi',
-      email: 'meera@student.com',
+      email: 'meera@attendance.in',
       password: 'student123',
       role: 'student',
       enrollmentNumber: 'CS2024005',
@@ -178,8 +184,8 @@ const seedDemoData = async () => {
   ]);
 
   console.log('✅ Demo data seeded (admin + 8 students)');
-  console.log('   Admin: admin@smart-attendance.com / admin123');
-  console.log('   Student: vikas@student.com / student123');
+  console.log('   Admin: admin@admin.in / admin123');
+  console.log('   Student: vikas@attendance.in / student123');
 
   // Auto-register Vikas's face data from image
   await registerVikasFace();
@@ -233,7 +239,7 @@ const registerVikasFace = async () => {
       descriptors.push(varied);
     }
 
-    const student = await User.findOne({ email: 'vikas@student.com' });
+    const student = await User.findOne({ email: 'vikas@attendance.in' });
     if (!student) return;
 
     await FaceData.create({
